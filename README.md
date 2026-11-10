@@ -135,7 +135,7 @@ external_components:
 
 ```yaml
 nps_client:  #组件名，djylb/nps使用nps_client，原版ehang-io/nps使用nps_client_origin
-
+  use_psram: true     #是否启用psram，需提前配置好pseram组件并确保可用
   connection_enabled:      #npc功能总开关，switch实体
     name: "NPC Enabled"
     entity_category: "config"
