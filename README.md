@@ -127,7 +127,7 @@ external_components:
       ref: main
     components:
       - nps_client
-	  - nps_client_origin
+      - nps_client_origin
     refresh: always
 ```
 
