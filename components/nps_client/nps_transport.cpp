@@ -10,7 +10,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#include "esp_crt_bundle.h"
 #include "esphome/core/log.h"
 #include "mbedtls/error.h"
 #include "mbedtls/net_sockets.h"
