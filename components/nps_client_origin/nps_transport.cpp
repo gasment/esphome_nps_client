@@ -10,7 +10,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#include "esp_crt_bundle.h"
 #include "esphome/core/log.h"
 #include "mbedtls/error.h"
 #include "mbedtls/net_sockets.h"
@@ -96,7 +95,7 @@ bool NpsTransport::tcp_connect_(const char *server, uint16_t connect_timeout_s,
       FD_ZERO(&wfds);
       FD_SET(fd_, &wfds);
       timeval tv{static_cast<long>(connect_timeout_s), 0};
-      rc = select(fd_ + 1, nullptr, &wfds, nullptr, &tv);
+      rc = ::select(fd_ + 1, nullptr, &wfds, nullptr, &tv);
       if (rc > 0) {
         int e = 0;
         socklen_t n = sizeof(e);
@@ -225,7 +224,7 @@ bool NpsTransport::connect(const char *server, bool use_tls,
     FD_ZERO(&fds);
     FD_SET(fd_, &fds);
     timeval tv{1, 0};
-    int sr = select(fd_ + 1, (rc == MBEDTLS_ERR_SSL_WANT_READ) ? &fds : nullptr,
+    int sr = ::select(fd_ + 1, (rc == MBEDTLS_ERR_SSL_WANT_READ) ? &fds : nullptr,
                     (rc == MBEDTLS_ERR_SSL_WANT_WRITE) ? &fds : nullptr,
                     nullptr, &tv);
     if (sr < 0) {

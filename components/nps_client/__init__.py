@@ -232,6 +232,12 @@ async def _create_runtime_text(var, config, key):
 async def to_code(config):
     # Go 服务端（djylb/nps）可能协商 TLS 1.3；保持对端证书以支持 RSA-PSS 套件。
     from esphome.components.esp32 import add_idf_sdkconfig_option
+    from esphome.components import esp32
+
+    # ESPHome 2026.10+ removes TLS unless a consumer explicitly requests it.
+    # Older releases keep TLS enabled and do not provide this helper.
+    if hasattr(esp32, "require_mbedtls_tls"):
+        esp32.require_mbedtls_tls()
 
     if config[CONF_USE_PSRAM]:
         # mbedTLS 全部走外部 SPIRAM（bridge TLS + 隧道级 TLS 上下文），

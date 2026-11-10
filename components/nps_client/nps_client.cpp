@@ -559,7 +559,7 @@ bool NpsClient::handle_conn_(const std::shared_ptr<NpsMuxConn> &conn,
     FD_ZERO(&rfds);
     FD_SET(local, &rfds);
     timeval tv{0, 0};
-    int rc = select(local + 1, &rfds, nullptr, nullptr, &tv);
+    int rc = ::select(local + 1, &rfds, nullptr, nullptr, &tv);
     if (rc < 0)
       break;
     if (FD_ISSET(local, &rfds)) {
@@ -631,7 +631,7 @@ bool NpsClient::dial_local_(const std::string &host, uint32_t timeout_ms,
       FD_SET(fd, &wfds);
       timeval tv{static_cast<long>(timeout_ms / 1000),
                  static_cast<long>((timeout_ms % 1000) * 1000)};
-      rc = select(fd + 1, nullptr, &wfds, nullptr, &tv);
+      rc = ::select(fd + 1, nullptr, &wfds, nullptr, &tv);
       if (rc > 0) {
         int e = 0;
         socklen_t n = sizeof(e);
