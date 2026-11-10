@@ -205,17 +205,23 @@ async def _create_runtime_text(var, config, key):
 
 
 async def to_code(config):
-    if config[CONF_USE_PSRAM]:
-        from esphome.components.esp32 import add_idf_sdkconfig_option
+    from esphome.components.esp32 import add_idf_sdkconfig_option
+    from esphome.components import esp32
 
-        # mbedTLS 全部走外部 SPIRAM（隧道级 TLS 上下文）
+    # ESPHome 2026.10+ removes TLS unless a consumer explicitly requests it.
+    # Older releases keep TLS enabled and do not provide this helper.
+    if hasattr(esp32, "require_mbedtls_tls"):
+        esp32.require_mbedtls_tls()
+
+    if config[CONF_USE_PSRAM]:
+        # Only the TLS allocation policy depends on PSRAM availability.
         add_idf_sdkconfig_option("CONFIG_MBEDTLS_EXTERNAL_MEM_ALLOC", True)
-        add_idf_sdkconfig_option("CONFIG_MBEDTLS_SSL_KEEP_PEER_CERTIFICATE", True)
-        add_idf_sdkconfig_option("CONFIG_MBEDTLS_SSL_PROTO_TLS1_3", True)
-        add_idf_sdkconfig_option("CONFIG_MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE", True)
-        add_idf_sdkconfig_option("CONFIG_MBEDTLS_SSL_TLS1_3_KEXM_EPHEMERAL", True)
-        add_idf_sdkconfig_option("CONFIG_MBEDTLS_KEY_EXCHANGE_ELLIPTIC_CURVE", True)
-        add_idf_sdkconfig_option("CONFIG_MBEDTLS_KEY_EXCHANGE_ECDHE_RSA", True)
+    add_idf_sdkconfig_option("CONFIG_MBEDTLS_SSL_KEEP_PEER_CERTIFICATE", True)
+    add_idf_sdkconfig_option("CONFIG_MBEDTLS_SSL_PROTO_TLS1_3", True)
+    add_idf_sdkconfig_option("CONFIG_MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE", True)
+    add_idf_sdkconfig_option("CONFIG_MBEDTLS_SSL_TLS1_3_KEXM_EPHEMERAL", True)
+    add_idf_sdkconfig_option("CONFIG_MBEDTLS_KEY_EXCHANGE_ELLIPTIC_CURVE", True)
+    add_idf_sdkconfig_option("CONFIG_MBEDTLS_KEY_EXCHANGE_ECDHE_RSA", True)
 
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
